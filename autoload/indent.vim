@@ -55,8 +55,14 @@ fun! s:guessoptions(data) abort
   endif
 
   let diff2 = get(data.space_diffs, 2, 0)
+  let diff3 = get(data.space_diffs, 3, 0)
   let diff4 = get(data.space_diffs, 4, 0)
-  let sw = diff2 > diff4/10 ? 2 : 4
+
+  if diff2 > diff4/10 || diff3 > diff4/10
+    let sw = diff2 > diff3/5 ? 2 : 3
+  else
+    let sw = 4
+  endif
 
   if data.tab_diffs + data.mixed_diffs <= data.diffs/10
     return ['et', 'sw='.sw, 'sts='.sw]
@@ -64,6 +70,9 @@ fun! s:guessoptions(data) abort
 
   if data.mixed_diffs >= data.diffs/10
     let ts = sw * 2
+    if ts > 8
+      return []
+    endif
     return ['noet', 'sw='.sw, 'sts='.sw, 'ts='.ts]
   endif
 
